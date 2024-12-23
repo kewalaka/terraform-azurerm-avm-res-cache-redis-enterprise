@@ -1,16 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
-# terraform-azurerm-avm-template
+# terraform-azurerm-avm-res-cache-redis-enterprise
 
-This is a template repo for Terraform Azure Verified Modules.
-
-Things to do:
-
-1. Set up a GitHub repo environment called `test`.
-1. Configure environment protection rule to ensure that approval is required before deploying to this environment.
-1. Create a user-assigned managed identity in your test subscription.
-1. Create a role assignment for the managed identity on your test subscription, use the minimum required role.
-1. Configure federated identity credentials on the user assigned managed identity. Use the GitHub environment.
-1. Search and update TODOs within the code and remove the TODO comments once complete.
+This is a repo in the style of Terraform Azure Verified Modules for Redis Enterprise Cache
 
 > [!IMPORTANT]
 > As the overall AVM framework is not GA (generally available) yet - the CI framework and test automation is not fully functional and implemented across all supported languages yet - breaking changes are expected, and additional customer feedback is yet to be gathered and incorporated. Hence, modules **MUST NOT** be published at version `1.0.0` or higher at this time.
@@ -24,9 +15,11 @@ Things to do:
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.5.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.71)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (>= 1.13, < 3)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.71, < 5)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -36,16 +29,18 @@ The following requirements are needed by this module:
 
 The following resources are used by this module:
 
+- [azapi_resource.redis_enterprise](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
+- [azurerm_monitor_diagnostic_setting.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) (resource)
 - [azurerm_private_endpoint.this_managed_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
 - [azurerm_private_endpoint.this_unmanaged_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
 - [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
-- [azurerm_resource_group.TODO](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
+- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 - [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
-- [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
+- [modtm_module_source.telemetry](https://registry.terraform.io/providers/Azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -60,7 +55,7 @@ Type: `string`
 
 ### <a name="input_name"></a> [name](#input\_name)
 
-Description: The name of the this resource.
+Description: The name of the Redis Enterprise cache.
 
 Type: `string`
 
@@ -69,6 +64,21 @@ Type: `string`
 Description: The resource group where the resources will be deployed.
 
 Type: `string`
+
+### <a name="input_sku"></a> [sku](#input\_sku)
+
+Description:
+- `capacity` - This property is only used with Enterprise and EnterpriseFlash SKUs. Determines the size of the cluster. Valid values are (2, 4, 6, ...) for Enterprise SKUs and (3, 9, 15, ...) for EnterpriseFlash SKUs.
+- `name` - The level of Redis Enterprise cluster to deploy. Possible values: ('Balanced\_B5', 'MemoryOptimized\_M10', 'ComputeOptimized\_X5', etc.). For more information on SKUs see the latest pricing documentation. Note that additional SKUs may become supported in the future.
+
+Type:
+
+```hcl
+object({
+    capacity = optional(number)
+    name     = string
+  })
+```
 
 ## Optional Inputs
 
@@ -97,6 +107,67 @@ object({
 ```
 
 Default: `null`
+
+### <a name="input_databases"></a> [databases](#input\_databases)
+
+Description: Map of Redis databases.
+
+Each database object supports the following attributes:
+
+- `name` - The name of the Redis Enterprise database.
+- `access_keys_authentication` - Indicates whether access keys authentication is enabled.
+- `client_protocol` - The client protocol to use.
+- `clustering_policy` - The clustering policy for the database.
+- `defer_upgrade` - Indicates whether to defer upgrades.
+- `eviction_policy` - The eviction policy for the database.
+- `port` - The port number for the database.
+
+`geo_replication` block supports the following:
+- `group_nickname` - The nickname for the geo-replication group.
+- `linked_databases` - List of linked databases for geo-replication. Each object in the list supports:
+  - `id` - The ID of the linked database.
+
+`modules` block supports the following:
+- `args` - The arguments for the module.
+- `name` - The name of the module.
+
+`persistence` block supports the following:
+- `aof_enabled` - Indicates whether AOF persistence is enabled.
+- `aof_frequency` - The frequency of AOF persistence.
+- `rdb_enabled` - Indicates whether RDB persistence is enabled.
+- `rdb_frequency` - The frequency of RDB persistence.
+
+Type:
+
+```hcl
+map(object({
+    name                       = string
+    access_keys_authentication = optional(string)
+    client_protocol            = optional(string)
+    clustering_policy          = optional(string)
+    defer_upgrade              = optional(string)
+    eviction_policy            = optional(string)
+    port                       = optional(number)
+    geo_replication = optional(object({
+      group_nickname = optional(string)
+      linked_databases = optional(list(object({
+        id = string
+      })))
+    }))
+    modules = optional(list(object({
+      args = string
+      name = string
+    })))
+    persistence = optional(object({
+      aof_enabled   = optional(bool)
+      aof_frequency = optional(string)
+      rdb_enabled   = optional(bool)
+      rdb_frequency = optional(string)
+    }))
+  }))
+```
+
+Default: `{}`
 
 ### <a name="input_diagnostic_settings"></a> [diagnostic\_settings](#input\_diagnostic\_settings)
 
@@ -131,6 +202,14 @@ map(object({
 ```
 
 Default: `{}`
+
+### <a name="input_enable_high_availability"></a> [enable\_high\_availability](#input\_enable\_high\_availability)
+
+Description: Indicates whether high availability is enabled.
+
+Type: `bool`
+
+Default: `true`
 
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
@@ -211,6 +290,7 @@ map(object({
       condition                              = optional(string, null)
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
     })), {})
     lock = optional(object({
       kind = string
@@ -252,6 +332,8 @@ Description: A map of role assignments to create on this resource. The map key i
 - `skip_service_principal_aad_check` - If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
 - `condition` - The condition which will be used to scope the role assignment.
 - `condition_version` - The version of the condition syntax. Valid values are '2.0'.
+- `delegated_managed_identity_resource_id` - The resource ID of the delegated managed identity to assign the role to.
+- `principal_type` - The type of principal to assign the role to. Possible values are 'ServicePrincipal' and 'User'.
 
 > Note: only set `skip_service_principal_aad_check` to true if you are assigning a role to a service principal.
 
@@ -266,6 +348,7 @@ map(object({
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
 ```
 
@@ -279,17 +362,66 @@ Type: `map(string)`
 
 Default: `null`
 
+### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
+
+Description: - `create` - (Defaults to 30 minutes) Used when creating the Container App Environment.
+- `delete` - (Defaults to 30 minutes) Used when deleting the Container App Environment.
+- `read` - (Defaults to 5 minutes) Used when retrieving the Container App Environment.
+- `update` - (Defaults to 30 minutes) Used when updating the Container App Environment.
+
+Type:
+
+```hcl
+object({
+    create = optional(string)
+    delete = optional(string)
+    read   = optional(string)
+  })
+```
+
+Default: `null`
+
+### <a name="input_zones"></a> [zones](#input\_zones)
+
+Description: The availability zones for the Redis Enterprise cache.
+
+Type: `list(string)`
+
+Default:
+
+```json
+[
+  "1",
+  "2",
+  "3"
+]
+```
+
 ## Outputs
 
 The following outputs are exported:
+
+### <a name="output_name"></a> [name](#output\_name)
+
+Description: The name of the resource
 
 ### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
 
 Description:   A map of the private endpoints created.
 
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: The resource ID of the Azure Managed Redis resource.
+
 ## Modules
 
-No modules.
+The following Modules are called:
+
+### <a name="module_database"></a> [database](#module\_database)
+
+Source: ./modules/database
+
+Version:
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection
