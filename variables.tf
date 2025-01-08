@@ -240,12 +240,13 @@ variable "timeouts" {
     create = optional(string)
     delete = optional(string)
     read   = optional(string)
+    update = optional(string)
   })
   default     = null
-  description = <<-EOT
- - `create` - (Defaults to 30 minutes) Used when creating the Container App Environment.
- - `delete` - (Defaults to 30 minutes) Used when deleting the Container App Environment.
- - `read` - (Defaults to 5 minutes) Used when retrieving the Container App Environment.
- - `update` - (Defaults to 30 minutes) Used when updating the Container App Environment.
-EOT
+  description = <<DESCRIPTION
+ - `create` - (Defaults to 30 minutes) Used when creating the Redis Enterprise cache.
+ - `delete` - (Defaults to 30 minutes) Used when deleting the Redis Enterprise cache.
+ - `read` - (Defaults to 5 minutes) Used when retrieving the Redis Enterprise cache.
+ - `update` - (Defaults to 30 minutes) Used when updating the Redis Enterprise cache.
+DESCRIPTION
 }

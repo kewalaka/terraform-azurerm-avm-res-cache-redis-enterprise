@@ -1,28 +1,3 @@
-variable "access_keys_authentication" {
-  type        = bool
-  description = "Indicates whether access keys authentication is enabled."
-}
-
-variable "client_protocol" {
-  type        = string
-  description = "The client protocol to use."
-}
-
-variable "clustering_policy" {
-  type        = string
-  description = "The clustering policy for the database."
-}
-
-variable "defer_upgrade" {
-  type        = bool
-  description = "Indicates whether to defer upgrades."
-}
-
-variable "eviction_policy" {
-  type        = string
-  description = "The eviction policy for the database."
-}
-
 variable "name" {
   type        = string
   description = "The name of the Redis Enterprise database."
@@ -33,16 +8,61 @@ variable "name" {
   }
 }
 
-variable "port" {
-  type        = number
-  description = "The port number for the database."
-}
-
 variable "redis_cache" {
   type = object({
     resource_id = string
   })
   description = "The resource ID of the Redis Enterprise cache."
+}
+
+variable "access_keys_authentication" {
+  type        = bool
+  default     = false
+  description = "Indicates whether access keys authentication is enabled."
+  nullable    = false
+}
+
+variable "client_protocol" {
+  type        = string
+  default     = "Encrypted"
+  description = "The client protocol to use."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^(Encrypted|Plaintext)$", var.client_protocol))
+    error_message = "The client protocol must be either 'Encrypted' or 'Plaintext'."
+  }
+}
+
+variable "clustering_policy" {
+  type        = string
+  default     = "OSSCluster"
+  description = "The clustering policy for the database."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^(OSSCluster|EnterpriseCluster)$", var.clustering_policy))
+    error_message = "The clustering policy must be either 'OSSCluster' or 'EnterpriseCluster'."
+  }
+}
+
+variable "defer_upgrade" {
+  type        = bool
+  default     = false
+  description = "Indicates whether to defer upgrades."
+  nullable    = false
+}
+
+variable "eviction_policy" {
+  type        = string
+  default     = "VolatileLRU"
+  description = "The eviction policy for the database."
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^(AllKeysLFU|AllKeysLRU|AllKeysRandom|NoEviction|VolatileLFU|VolatileLRU|VolatileRandom|VolatileTTL)$", var.eviction_policy))
+    error_message = "The eviction policy must be one of 'AllKeysLFU', 'AllKeysLRU', 'AllKeysRandom', 'NoEviction', 'VolatileLFU', 'VolatileLRU', 'VolatileRandom', or 'VolatileTTL'."
+  }
 }
 
 variable "geo_replication" {
@@ -57,6 +77,7 @@ variable "geo_replication" {
     linkedDatabases = []
   }
   description = "Configuration for geo-replication."
+  nullable    = false
 }
 
 variable "modules" {
@@ -66,6 +87,7 @@ variable "modules" {
   }))
   default     = []
   description = "List of modules to be enabled in the database."
+  nullable    = false
 }
 
 variable "persistence" {
@@ -77,14 +99,22 @@ variable "persistence" {
   })
   default     = null
   description = "Persistence configuration for the database."
+  nullable    = false
+}
+
+variable "port" {
+  type        = number
+  default     = null
+  description = "The port number for the database.  Defaults to an available port."
 }
 
 variable "timeouts" {
   type = object({
-    create = string
-    delete = string
-    read   = string
+    create = optional(string)
+    delete = optional(string)
+    read   = optional(string)
+    update = optional(string)
   })
   default     = null
-  description = "The timeouts for creating, reading, and deleting the storage resource."
+  description = "The timeouts for creating, reading, updating, and deleting the database resource."
 }

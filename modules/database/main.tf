@@ -5,7 +5,7 @@ resource "azapi_resource" "database" {
       accessKeysAuthentication = var.access_keys_authentication
       clientProtocol           = var.client_protocol
       clusteringPolicy         = var.clustering_policy
-      deferUpgrade             = var.defer_upgrade
+      deferUpgrade             = var.defer_upgrade ? "Deferred" : "NotDeferred"
       evictionPolicy           = var.eviction_policy
       port                     = var.port
       geoReplication = {
@@ -41,6 +41,7 @@ resource "azapi_resource" "database" {
       create = timeouts.value.create
       delete = timeouts.value.delete
       read   = timeouts.value.read
+      update = timeouts.value.update
     }
   }
 }

@@ -29,47 +29,11 @@ The following resources are used by this module:
 
 The following input variables are required:
 
-### <a name="input_access_keys_authentication"></a> [access\_keys\_authentication](#input\_access\_keys\_authentication)
-
-Description: Indicates whether access keys authentication is enabled.
-
-Type: `bool`
-
-### <a name="input_client_protocol"></a> [client\_protocol](#input\_client\_protocol)
-
-Description: The client protocol to use.
-
-Type: `string`
-
-### <a name="input_clustering_policy"></a> [clustering\_policy](#input\_clustering\_policy)
-
-Description: The clustering policy for the database.
-
-Type: `string`
-
-### <a name="input_defer_upgrade"></a> [defer\_upgrade](#input\_defer\_upgrade)
-
-Description: Indicates whether to defer upgrades.
-
-Type: `bool`
-
-### <a name="input_eviction_policy"></a> [eviction\_policy](#input\_eviction\_policy)
-
-Description: The eviction policy for the database.
-
-Type: `string`
-
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: The name of the Redis Enterprise database.
 
 Type: `string`
-
-### <a name="input_port"></a> [port](#input\_port)
-
-Description: The port number for the database.
-
-Type: `number`
 
 ### <a name="input_redis_cache"></a> [redis\_cache](#input\_redis\_cache)
 
@@ -86,6 +50,46 @@ object({
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_access_keys_authentication"></a> [access\_keys\_authentication](#input\_access\_keys\_authentication)
+
+Description: Indicates whether access keys authentication is enabled.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_client_protocol"></a> [client\_protocol](#input\_client\_protocol)
+
+Description: The client protocol to use.
+
+Type: `string`
+
+Default: `"Encrypted"`
+
+### <a name="input_clustering_policy"></a> [clustering\_policy](#input\_clustering\_policy)
+
+Description: The clustering policy for the database.
+
+Type: `string`
+
+Default: `"OSSCluster"`
+
+### <a name="input_defer_upgrade"></a> [defer\_upgrade](#input\_defer\_upgrade)
+
+Description: Indicates whether to defer upgrades.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_eviction_policy"></a> [eviction\_policy](#input\_eviction\_policy)
+
+Description: The eviction policy for the database.
+
+Type: `string`
+
+Default: `"VolatileLRU"`
 
 ### <a name="input_geo_replication"></a> [geo\_replication](#input\_geo\_replication)
 
@@ -143,17 +147,26 @@ object({
 
 Default: `null`
 
+### <a name="input_port"></a> [port](#input\_port)
+
+Description: The port number for the database.  Defaults to an available port.
+
+Type: `number`
+
+Default: `null`
+
 ### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
 
-Description: The timeouts for creating, reading, and deleting the storage resource.
+Description: The timeouts for creating, reading, updating, and deleting the database resource.
 
 Type:
 
 ```hcl
 object({
-    create = string
-    delete = string
-    read   = string
+    create = optional(string)
+    delete = optional(string)
+    read   = optional(string)
+    update = optional(string)
   })
 ```
 
