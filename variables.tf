@@ -9,8 +9,9 @@ variable "name" {
   description = "The name of the Redis Enterprise cache."
 
   validation {
-    condition     = can(regex("^[A-Za-z0-9]{1,60}$", var.name))
-    error_message = "The name must be between 1 and 60 characters and contain only alphanumeric characters."
+    # TODO clarify the name requirements as the REST API specs & portal says different things - API spec says ^[A-Za-z0-9]{1,60}$ 
+    condition     = can(regex("^[A-Za-z0-9-]{1,63}$", var.name)) && !can(regex("--", var.name)) && !can(regex("-$", var.name))
+    error_message = "The name must be between 1 and 63 characters and contain only alphanumeric characters and hyphens, no double hyphens (--), and cannot end with a hyphen."
   }
 }
 
