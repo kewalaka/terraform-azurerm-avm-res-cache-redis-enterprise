@@ -22,7 +22,8 @@ resource "azapi_resource" "redis_enterprise" {
       capacity = var.sku.capacity
       name     = var.sku.name
     }
-    zones = var.zones
+    # TODO clarify.  This is not supported for Balanaced SKUs, probably not for others either.
+    #zones = var.zones
   }
   name                   = var.name
   parent_id              = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}"

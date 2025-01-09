@@ -1,3 +1,4 @@
+# TODO This can't be false if a Balanced SKU is used - suspect this is also true for other redis enterprise SKUs.
 variable "enable_high_availability" {
   description = "Indicates whether high availability is enabled."
   type        = bool
@@ -29,8 +30,9 @@ DESCRIPTION
   }
 }
 
-variable "zones" {
-  description = "The availability zones for the Redis Enterprise cache."
-  type        = list(string)
-  default     = ["1", "2", "3"]
-}
+# TODO This must be all zones if a Balanced SKU is used - suspect this is also true for other redis enterprise SKUs.
+# variable "zones" {
+#   description = "The availability zones for the Redis Enterprise cache."
+#   type        = list(string)
+#   default     = ["1", "2", "3"]
+# }
