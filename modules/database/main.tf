@@ -1,21 +1,13 @@
 resource "azapi_resource" "database" {
   type = "Microsoft.Cache/redisEnterprise/databases@2024-09-01-preview"
   body = {
-    properties = {
+    properties = merge({
       accessKeysAuthentication = var.access_keys_authentication ? "Enabled" : "Disabled"
       clientProtocol           = var.client_protocol
       clusteringPolicy         = var.clustering_policy
       deferUpgrade             = var.defer_upgrade ? "Deferred" : "NotDeferred"
       evictionPolicy           = var.eviction_policy
       port                     = var.port
-      geoReplication = var.geo_replication != null ? {
-        groupNickname = var.geo_replication.group_nickname
-        linkedDatabases = var.geo_replication.linkedDatabases != null ? [
-          for linkedDatabase in var.geo_replication.linkedDatabases : {
-            id = linkedDatabase.id
-          }
-        ] : []
-      } : null
       modules = var.modules != null ? [
         for module in var.modules : {
           args = module.args
@@ -28,7 +20,18 @@ resource "azapi_resource" "database" {
         rdbEnabled   = var.persistence.rdb_enabled
         rdbFrequency = var.persistence.rdb_frequency
       } : null
-    }
+      },
+      # allow geo_replication to not be specified, as the balanced SKU doesn't support this setting and will fail to deploy even if it is null.
+      var.geo_replication == null ? {} : {
+        geoReplication = {
+          groupNickname = var.geo_replication.group_nickname
+          linkedDatabases = [
+            for linkedDatabase in var.geo_replication.linkedDatabases : {
+              id = linkedDatabase.id
+            }
+          ]
+        }
+    })
   }
   name                   = "default"
   parent_id              = var.redis_cache.resource_id
