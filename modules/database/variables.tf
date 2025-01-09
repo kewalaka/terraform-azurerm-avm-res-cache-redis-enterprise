@@ -68,13 +68,14 @@ variable "eviction_policy" {
 
 variable "geo_replication" {
   type = object({
-    group_nickname = string
-    linkedDatabases = list(object({
+    group_nickname = optional(string)
+    linkedDatabases = optional(list(object({
       id = string
-    }))
+    })))
   })
-  default     = null
+  default     = {}
   description = "Configuration for geo-replication."
+  nullable    = false
 }
 
 variable "modules" {
