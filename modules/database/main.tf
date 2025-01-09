@@ -2,7 +2,7 @@ resource "azapi_resource" "database" {
   type = "Microsoft.Cache/redisEnterprise/databases@2024-09-01-preview"
   body = {
     properties = {
-      accessKeysAuthentication = var.access_keys_authentication
+      accessKeysAuthentication = var.access_keys_authentication ? "Enabled" : "Disabled"
       clientProtocol           = var.client_protocol
       clusteringPolicy         = var.clustering_policy
       deferUpgrade             = var.defer_upgrade ? "Deferred" : "NotDeferred"
