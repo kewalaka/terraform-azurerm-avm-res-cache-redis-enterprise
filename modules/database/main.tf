@@ -22,16 +22,16 @@ resource "azapi_resource" "database" {
       } : null
       },
       # allow geo_replication to not be specified, as the balanced SKU doesn't support this setting and will fail to deploy even if it is null.
-      # length(var.geo_replication) > 0 ? {
-      #   geoReplication = {
-      #     groupNickname = var.geo_replication.group_nickname
-      #     linkedDatabases = var.geo_replication.linkedDatabases != null ? [
-      #       for linkedDatabase in var.geo_replication.linkedDatabases : {
-      #         id = linkedDatabase.id
-      #       }
-      #     ] : []
-      #   }
-      # } : {}
+      var.geo_replication != null ? {
+        geoReplication = {
+          groupNickname = var.geo_replication.group_nickname
+          linkedDatabases = var.geo_replication.linkedDatabases != null ? [
+            for linkedDatabase in var.geo_replication.linkedDatabases : {
+              id = linkedDatabase.id
+            }
+          ] : []
+        }
+      } : {}
     )
   }
   name                   = "default"
