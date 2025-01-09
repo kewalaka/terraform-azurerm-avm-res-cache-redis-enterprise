@@ -73,10 +73,7 @@ variable "geo_replication" {
       id = string
     }))
   })
-  default = {
-    group_nickname  = ""
-    linkedDatabases = []
-  }
+  default     = {}
   description = "Configuration for geo-replication."
   nullable    = false
 }
