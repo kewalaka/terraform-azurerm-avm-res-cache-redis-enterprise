@@ -73,9 +73,8 @@ variable "geo_replication" {
       id = string
     }))
   })
-  default     = {}
+  default     = null
   description = "Configuration for geo-replication."
-  nullable    = false
 }
 
 variable "modules" {
