@@ -7,7 +7,7 @@ resource "azapi_resource" "database" {
       clusteringPolicy         = var.clustering_policy
       deferUpgrade             = var.defer_upgrade ? "Deferred" : "NotDeferred"
       evictionPolicy           = var.eviction_policy
-      port                     = var.port
+      port                     = var.port == null ? 10000 : var.port
       modules = var.modules != null ? [
         for module in var.modules : {
           args = module.args
