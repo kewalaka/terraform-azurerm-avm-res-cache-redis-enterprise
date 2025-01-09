@@ -93,11 +93,16 @@ variable "modules" {
 variable "persistence" {
   type = object({
     aof_enabled   = bool
-    aof_frequency = string
+    aof_frequency = optional(string)
     rdb_enabled   = bool
-    rdb_frequency = string
+    rdb_frequency = optional(string)
   })
-  default     = {}
+  default = {
+    aof_enabled   = false
+    aof_frequency = null
+    rdb_enabled   = false
+    rdb_frequency = null
+  }
   description = "Persistence configuration for the database."
   nullable    = false
 }
