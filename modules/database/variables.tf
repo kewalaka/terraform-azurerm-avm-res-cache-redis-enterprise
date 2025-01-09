@@ -97,7 +97,7 @@ variable "persistence" {
     rdb_enabled   = bool
     rdb_frequency = string
   })
-  default     = null
+  default     = {}
   description = "Persistence configuration for the database."
   nullable    = false
 }
