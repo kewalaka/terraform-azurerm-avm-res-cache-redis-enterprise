@@ -25,11 +25,11 @@ resource "azapi_resource" "database" {
       var.geo_replication == null ? {} : {
         geoReplication = {
           groupNickname = var.geo_replication.group_nickname
-          linkedDatabases = [
+          linkedDatabases = var.geo_replication.linkedDatabases != null ? [
             for linkedDatabase in var.geo_replication.linkedDatabases : {
               id = linkedDatabase.id
             }
-          ]
+          ] : []
         }
     })
   }
