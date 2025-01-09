@@ -57,8 +57,8 @@ module "cache" {
   }
 
   databases = {
-    "moodle" = {
-      name = "moodle-redis-db"
+    "default" = {
+      access_keys_authentication = true
     }
   }
 }

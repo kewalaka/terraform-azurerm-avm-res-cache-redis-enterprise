@@ -1,12 +1,13 @@
-variable "name" {
-  type        = string
-  description = "The name of the Redis Enterprise database."
+# REST API says "You can currently only create or update a single RedisEnterprise database which must be named 'default'"
+# variable "name" {
+#   type        = string
+#   description = "The name of the Redis Enterprise database."
 
-  validation {
-    condition     = can(regex("^[A-Za-z0-9]{1,60}$", var.name))
-    error_message = "The name must be between 1 and 60 characters and contain only alphanumeric characters."
-  }
-}
+#   validation {
+#     condition     = can(regex("^[A-Za-z0-9]{1,60}$", var.name))
+#     error_message = "The name must be between 1 and 60 characters and contain only alphanumeric characters."
+#   }
+# }
 
 variable "redis_cache" {
   type = object({

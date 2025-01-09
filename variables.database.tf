@@ -1,6 +1,6 @@
 variable "databases" {
   type = map(object({
-    name                       = string
+    # name                       = string # You can currently only create or update a single RedisEnterprise database which must be named 'default'
     access_keys_authentication = optional(string)
     client_protocol            = optional(string)
     clustering_policy          = optional(string)
@@ -29,7 +29,6 @@ Map of Redis databases.
 
 Each database object supports the following attributes:
 
-- `name` - The name of the Redis Enterprise database.
 - `access_keys_authentication` - Indicates whether access keys authentication is enabled.
 - `client_protocol` - The client protocol to use.
 - `clustering_policy` - The clustering policy for the database.

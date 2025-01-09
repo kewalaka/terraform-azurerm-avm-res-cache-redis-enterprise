@@ -2,7 +2,6 @@ module "database" {
   source   = "./modules/database"
   for_each = var.databases
 
-  name        = each.value.name
   redis_cache = { resource_id = azapi_resource.redis_enterprise.id }
 
   access_keys_authentication = try(each.value.access_keys_authentication, null)

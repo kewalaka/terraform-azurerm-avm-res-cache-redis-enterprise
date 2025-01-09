@@ -30,7 +30,7 @@ resource "azapi_resource" "database" {
       } : null
     }
   }
-  name                   = var.name
+  name                   = "Default"
   parent_id              = var.redis_cache.resource_id
   response_export_values = ["*"]
 
