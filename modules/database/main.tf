@@ -8,14 +8,14 @@ resource "azapi_resource" "database" {
       deferUpgrade             = var.defer_upgrade ? "Deferred" : "NotDeferred"
       evictionPolicy           = var.eviction_policy
       port                     = var.port
-      geoReplication = {
+      geoReplication = var.geo_replication != null ? {
         groupNickname = var.geo_replication.group_nickname
         linkedDatabases = var.geo_replication.linkedDatabases != null ? [
           for linkedDatabase in var.geo_replication.linkedDatabases : {
             id = linkedDatabase.id
           }
         ] : []
-      }
+      } : null
       modules = var.modules != null ? [
         for module in var.modules : {
           args = module.args
